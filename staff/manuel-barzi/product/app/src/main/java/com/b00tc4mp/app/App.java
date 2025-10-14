@@ -1,10 +1,12 @@
-
 package com.b00tc4mp.app;
 
 import javax.swing.*;
 import java.awt.*;
 
+import logic.Logic;
+
 public class App extends JFrame {
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App().setVisible(true));
     }
@@ -12,15 +14,17 @@ public class App extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
 
-    // Simple in-memory user store
-    private String registeredUser = null;
-    private String registeredPass = null;
+    private JLabel welcome;
+
+    private Logic logic;
 
     public App() {
         setTitle("App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
         setLocationRelativeTo(null);
+
+        logic = Logic.get();
 
         // Panels
         JPanel registerPanel = createRegisterPanel();
@@ -46,51 +50,81 @@ public class App extends JFrame {
         title.setBackground(Color.CYAN);
         title.setOpaque(true);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
         panel.add(title, gbc);
 
         gbc.gridwidth = 1;
-        gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("Username:"), gbc);
-        JTextField userField = new JTextField(15);
-        gbc.gridx = 1;
-        panel.add(userField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Password:"), gbc);
-        JPasswordField passField = new JPasswordField(15);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Name:"), gbc);
+        JTextField nameField = new JTextField(15);
         gbc.gridx = 1;
-        panel.add(passField, gbc);
+        panel.add(nameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Username:"), gbc);
+        JTextField usernameField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(usernameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Password:"), gbc);
+        JPasswordField passwordField = new JPasswordField(15);
+        gbc.gridx = 1;
+        panel.add(passwordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Confirm Password:"), gbc);
+        JPasswordField confirmPasswordField = new JPasswordField(15);
+        gbc.gridx = 1;
+        panel.add(confirmPasswordField, gbc);
 
         JButton registerBtn = new JButton("Register");
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
         panel.add(registerBtn, gbc);
 
         JButton toLoginBtn = new JButton("Go to Login");
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         panel.add(toLoginBtn, gbc);
 
         JLabel message = new JLabel("", SwingConstants.CENTER);
-        gbc.gridy = 5;
+        gbc.gridy = 7;
         panel.add(message, gbc);
 
         registerBtn.addActionListener(e -> {
-            String user = userField.getText().trim();
-            String pass = new String(passField.getPassword());
-            
-            if (user.isEmpty() || pass.isEmpty()) {
-                message.setText("Please fill all fields.");
-            } else {
-                registeredUser = user;
-                registeredPass = pass;
+            String name = nameField.getText().trim();
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            String confirmPass = new String(confirmPasswordField.getPassword());
 
-                message.setText("Registered! Go to login.");
+            try {
+                logic.registerUser(name, username, password, confirmPass);
+
+                nameField.setText("");
+                usernameField.setText("");
+                passwordField.setText("");
+                confirmPasswordField.setText("");
+                message.setText("");
+
+                cardLayout.show(cards, "login");
+            } catch (Exception ex) {
+                message.setText("Error: " + ex.getMessage());
             }
         });
 
         toLoginBtn.addActionListener(e -> {
-            userField.setText("");
-            passField.setText("");
+            nameField.setText("");
+            usernameField.setText("");
+            passwordField.setText("");
+            confirmPasswordField.setText("");
             message.setText("");
 
             cardLayout.show(cards, "login");
@@ -101,31 +135,37 @@ public class App extends JFrame {
 
     private JPanel createLoginPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel("Login", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
         panel.add(title, gbc);
 
         gbc.gridwidth = 1;
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         panel.add(new JLabel("Username:"), gbc);
-        JTextField userField = new JTextField(15);
+        JTextField usernameField = new JTextField(15);
         gbc.gridx = 1;
-        panel.add(userField, gbc);
+        panel.add(usernameField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel.add(new JLabel("Password:"), gbc);
-        JPasswordField passField = new JPasswordField(15);
+        JPasswordField passwordField = new JPasswordField(15);
         gbc.gridx = 1;
-        panel.add(passField, gbc);
+        panel.add(passwordField, gbc);
 
         JButton loginBtn = new JButton("Login");
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
         panel.add(loginBtn, gbc);
 
         JButton toRegisterBtn = new JButton("Go to Register");
@@ -137,22 +177,29 @@ public class App extends JFrame {
         panel.add(message, gbc);
 
         loginBtn.addActionListener(e -> {
-            String user = userField.getText().trim();
-            String pass = new String(passField.getPassword());
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
 
-            if (user.equals(registeredUser) && pass.equals(registeredPass)) {
+            try {
+                logic.loginUser(username, password);
+
+                usernameField.setText("");
+                passwordField.setText("");
                 message.setText("");
 
-                // TODO call https://zenquotes.io/api/today and display quote on home panel
+                String name = logic.getCurrentUser().getName();
+
+                welcome.setText("Welcome, " + name + "!");
+
                 cardLayout.show(cards, "home");
-            } else {
-                message.setText("Invalid credentials.");
+            } catch (Exception ex) {
+                message.setText("Error: " + ex.getMessage());
             }
         });
 
         toRegisterBtn.addActionListener(e -> {
-            userField.setText("");
-            passField.setText("");
+            usernameField.setText("");
+            passwordField.setText("");
             message.setText("");
 
             cardLayout.show(cards, "register");
@@ -164,7 +211,7 @@ public class App extends JFrame {
     private JPanel createHomePanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        JLabel welcome = new JLabel("Welcome Home!", SwingConstants.CENTER);
+        welcome = new JLabel("Welcome Home!", SwingConstants.CENTER);
         welcome.setFont(welcome.getFont().deriveFont(Font.BOLD, 20f));
         panel.add(welcome, BorderLayout.CENTER);
 
