@@ -11,6 +11,9 @@ public class Data {
     public static Data get() {
         if (instance == null) {
             instance = new Data();
+
+            UserData pepito = new UserData("Pepito Grillo", "pepito", "123123123");
+            instance.addUser(pepito);
         }
 
         return instance;

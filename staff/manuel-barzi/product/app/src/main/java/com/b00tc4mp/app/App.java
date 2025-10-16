@@ -1,9 +1,11 @@
 package com.b00tc4mp.app;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 import com.b00tc4mp.app.logic.Logic;
+import com.b00tc4mp.app.logic.ZenQuote;
 
 public class App extends JFrame {
 
@@ -15,6 +17,7 @@ public class App extends JFrame {
     private final JPanel cards = new JPanel(cardLayout);
 
     private JLabel welcome;
+    private JTextPane quoteArea;
 
     private Logic logic;
 
@@ -36,7 +39,7 @@ public class App extends JFrame {
         cards.add(homePanel, "home");
 
         add(cards);
-        cardLayout.show(cards, "register");
+        cardLayout.show(cards, "login");
     }
 
     private JPanel createRegisterPanel() {
@@ -47,7 +50,6 @@ public class App extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel("Register", SwingConstants.CENTER);
-        title.setBackground(Color.CYAN);
         title.setOpaque(true);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
         gbc.gridx = 0;
@@ -189,7 +191,11 @@ public class App extends JFrame {
 
                 String name = logic.getCurrentUser().getName();
 
+                ZenQuote quote = logic.getZenQuoteOfDay();
+
                 welcome.setText("Welcome, " + name + "!");
+
+                quoteArea.setText("<html><center>&quot;" + quote.getQuote() + "&quot;<br>- " + quote.getAuthor() + "</center></html>");
 
                 cardLayout.show(cards, "home");
             } catch (Exception ex) {
@@ -213,7 +219,14 @@ public class App extends JFrame {
 
         welcome = new JLabel("Welcome Home!", SwingConstants.CENTER);
         welcome.setFont(welcome.getFont().deriveFont(Font.BOLD, 20f));
-        panel.add(welcome, BorderLayout.CENTER);
+        panel.add(welcome, BorderLayout.NORTH);
+
+        quoteArea = new JTextPane();
+        quoteArea.setEditable(false);
+        quoteArea.setContentType("text/html");
+        quoteArea.setFont(quoteArea.getFont().deriveFont(Font.ITALIC, 14f));
+
+        panel.add(quoteArea, BorderLayout.CENTER);
 
         JButton logoutBtn = new JButton("Logout");
         panel.add(logoutBtn, BorderLayout.SOUTH);

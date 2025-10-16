@@ -1,5 +1,13 @@
 package com.b00tc4mp.app.logic;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.b00tc4mp.app.data.Data;
 import com.b00tc4mp.app.data.UserData;
 
@@ -91,5 +99,29 @@ public class Logic {
         UserData user = data.findUserById(this.userId);
 
         return new User(user.getId(), user.getName(), user.getUsername());
+    }
+
+    public ZenQuote getZenQuoteOfDay() throws Exception {
+        try {
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(new URI("https://zenquotes.io/api/today"))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                // Parse JSON response
+                JSONArray jsonArray = new JSONArray(response.body());
+                JSONObject quoteObject = jsonArray.getJSONObject(0);
+
+                String quote = quoteObject.getString("q");
+                String author = quoteObject.getString("a");
+
+
+                return new ZenQuote(quote, author);
+            } catch (Exception e) {
+                throw new Exception("Failed to fetch quote: " + e.getMessage());
+            }
     }
 }
