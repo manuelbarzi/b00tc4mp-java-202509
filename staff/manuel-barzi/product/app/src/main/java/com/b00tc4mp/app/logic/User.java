@@ -1,4 +1,4 @@
-package logic;
+package com.b00tc4mp.app.logic;
 
 public class User {
     private String id;

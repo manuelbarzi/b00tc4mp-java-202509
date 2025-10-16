@@ -1,7 +1,7 @@
-package logic;
+package com.b00tc4mp.app.logic;
 
-import data.Data;
-import data.UserData;
+import com.b00tc4mp.app.data.Data;
+import com.b00tc4mp.app.data.UserData;
 
 public class Logic {
 

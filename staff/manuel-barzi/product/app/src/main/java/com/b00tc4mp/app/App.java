@@ -3,7 +3,7 @@ package com.b00tc4mp.app;
 import javax.swing.*;
 import java.awt.*;
 
-import logic.Logic;
+import com.b00tc4mp.app.logic.Logic;
 
 public class App extends JFrame {
 
