@@ -1,13 +1,14 @@
-package logic;
+package com.b00tc4mp.app.logic;
 
-import data.Data;
-import data.UserData;
+import com.b00tc4mp.app.data.Data;
+import com.b00tc4mp.app.data.UserData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class LogicTest {
+public class LogicTest {
 
     private Logic logic;
 
@@ -280,11 +281,13 @@ class LogicTest {
 
         // Register user first
         UserData user = new UserData(name, username, password);
+        Data.get().addUser(user);
 
         logic.userId = user.getId();
         // No exception means success
 
         assertTrue(logic.isUserLoggedIn());
+
         assertEquals(logic.userId, Data.get().findUserByUsername(username).getId());
     }
 
@@ -302,6 +305,8 @@ class LogicTest {
 
         // Register user first
         UserData user = new UserData(name, username, password);
+        Data.get().addUser(user);
+
         logic.userId = user.getId();
 
         User currentUser = logic.getCurrentUser();
