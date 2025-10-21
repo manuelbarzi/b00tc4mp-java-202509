@@ -111,13 +111,18 @@ public class Logic {
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+                int status = response.statusCode();
+
+                if (status != 200) {
+                    throw new Exception("Failed to fetch quote, status code: " + status);
+                }
+
                 // Parse JSON response
                 JSONArray jsonArray = new JSONArray(response.body());
                 JSONObject quoteObject = jsonArray.getJSONObject(0);
 
                 String quote = quoteObject.getString("q");
                 String author = quoteObject.getString("a");
-
 
                 return new ZenQuote(quote, author);
             } catch (Exception e) {
