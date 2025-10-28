@@ -1,4 +1,4 @@
-package com.b00tc4mp.app.logic;
+package com.b00tc4mp.logic;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -8,8 +8,8 @@ import java.net.URI;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.b00tc4mp.app.data.Data;
-import com.b00tc4mp.app.data.UserData;
+import com.b00tc4mp.data.Data;
+import com.b00tc4mp.data.UserData;
 
 public class Logic {
 

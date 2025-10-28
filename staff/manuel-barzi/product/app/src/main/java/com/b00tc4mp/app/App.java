@@ -4,8 +4,8 @@ import javax.swing.*;
 
 import java.awt.*;
 
-import com.b00tc4mp.app.logic.Logic;
-import com.b00tc4mp.app.logic.ZenQuote;
+import com.b00tc4mp.logic.Logic;
+import com.b00tc4mp.logic.ZenQuote;
 
 public class App extends JFrame {
 

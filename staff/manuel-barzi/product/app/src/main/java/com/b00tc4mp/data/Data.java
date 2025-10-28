@@ -1,4 +1,4 @@
-package com.b00tc4mp.app.data;
+package com.b00tc4mp.data;
 
 import java.util.ArrayList;
 

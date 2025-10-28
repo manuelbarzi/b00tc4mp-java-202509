@@ -1,7 +1,8 @@
 package com.b00tc4mp.api;
 
 import com.b00tc4mp.data.Data;
-import com.b00tc4mp.data.UserData;
+import com.b00tc4mp.logic.Logic;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -20,76 +21,59 @@ public class UsersServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
     private Data data; // Will be initialized in init()
+    private Logic logic;
 
     @Override
     public void init() throws ServletException {
         super.init();
         this.data = Data.get(); // Get singleton instance (with preloaded "pepito")
+        this.logic = Logic.get();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
         // Read JSON body
         String jsonInput = readRequestBody(request);
         if (jsonInput == null || jsonInput.trim().isEmpty()) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, "Empty request body");
+            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, Exception.class.getSimpleName(), "Empty request body");
             return;
         }
 
         // Parse JSON
         JsonObject json;
+        String name;
+        String username;
+        String password;
+        String confirmPassword;
+
         try {
             json = gson.fromJson(jsonInput, JsonObject.class);
+
+            name = json.get("name").getAsString().trim();
+            username = json.get("username").getAsString().trim();
+            password = json.get("password").getAsString();
+            confirmPassword = json.get("confirmPassword").getAsString();
         } catch (JsonSyntaxException e) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Invalid JSON format");
+            return;
+        } catch (NullPointerException e) {
+            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Missing fields in JSON");
             return;
         }
 
-        // Validate fields
-        if (!json.has("name") || !json.has("username") || !json.has("password")) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing required fields: name, username, password");
-            return;
+        try {
+            logic.registerUser(name, username, password, confirmPassword);
+
+            // Success response
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            out.flush();
+        } catch (Exception e) {
+            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), e.getMessage());
         }
-
-        String name = json.get("name").getAsString().trim();
-        String username = json.get("username").getAsString().trim();
-        String password = json.get("password").getAsString();
-
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST,
-                    "All fields must be non-empty");
-            return;
-        }
-
-        // Use Data singleton for user management
-        UserData existingUser = data.findUserByUsername(username);
-        if (existingUser != null) {
-            sendError(response, out, HttpServletResponse.SC_CONFLICT,
-                    "Username already taken");
-            return;
-        }
-
-        // Create and register new user
-        UserData newUser = new UserData(name, username, password);
-        data.addUser(newUser);
-
-        // Success response
-        JsonObject success = new JsonObject();
-        success.addProperty("message", "User registered successfully");
-        success.addProperty("id", newUser.getId());
-        success.addProperty("name", newUser.getName());
-        success.addProperty("username", newUser.getUsername());
-
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        out.print(gson.toJson(success));
-        out.flush();
     }
 
     // Helper: Read full request body
@@ -103,15 +87,20 @@ public class UsersServlet extends HttpServlet {
                 sb.append(line);
             }
         }
-        
+
         return sb.toString();
     }
 
     // Helper: Send JSON error
-    private void sendError(HttpServletResponse response, PrintWriter out, int status, String message) {
+    private void sendError(HttpServletResponse response, PrintWriter out, int status, String error, String message) {
         response.setStatus(status);
-        JsonObject error = new JsonObject();
-        error.addProperty("error", message);
-        out.print(gson.toJson(error));
+        response.setCharacterEncoding("UTF-8");
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("error", error);
+        jsonObject.addProperty("message", message);
+
+        out.print(gson.toJson(jsonObject));
+        out.flush();
     }
 }

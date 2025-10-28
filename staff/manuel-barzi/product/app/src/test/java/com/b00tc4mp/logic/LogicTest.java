@@ -1,7 +1,7 @@
-package com.b00tc4mp.app.logic;
+package com.b00tc4mp.logic;
 
-import com.b00tc4mp.app.data.Data;
-import com.b00tc4mp.app.data.UserData;
+import com.b00tc4mp.data.Data;
+import com.b00tc4mp.data.UserData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

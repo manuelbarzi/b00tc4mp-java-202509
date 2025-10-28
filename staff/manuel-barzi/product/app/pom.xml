@@ -58,6 +58,7 @@
                                     <mainClass>com.b00tc4mp.app.App</mainClass>
                                 </transformer>
                             </transformers>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
