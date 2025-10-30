@@ -5,8 +5,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import com.b00tc4mp.data.Data;
 import com.b00tc4mp.data.UserData;
@@ -19,8 +19,12 @@ public class Logic {
 
     private Data data;
 
+    private final Gson gson;
+
     private Logic() {
         data = Data.get();
+
+        gson = new Gson();
     }
 
     public static Logic get() {
@@ -103,30 +107,41 @@ public class Logic {
 
     public ZenQuote getZenQuoteOfDay() throws Exception {
         try {
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI("https://zenquotes.io/api/today"))
-                        .GET()
-                        .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://zenquotes.io/api/today"))
+                    .GET()
+                    .build();
 
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-                int status = response.statusCode();
+            int status = response.statusCode();
 
-                if (status != 200) {
-                    throw new Exception("Failed to fetch quote, status code: " + status);
-                }
-
-                // Parse JSON response
-                JSONArray jsonArray = new JSONArray(response.body());
-                JSONObject quoteObject = jsonArray.getJSONObject(0);
-
-                String quote = quoteObject.getString("q");
-                String author = quoteObject.getString("a");
-
-                return new ZenQuote(quote, author);
-            } catch (Exception e) {
-                throw new Exception("Failed to fetch quote: " + e.getMessage());
+            if (status != 200) {
+                throw new Exception("Failed to fetch quote, status code: " + status);
             }
+
+            // Parse JSON using Gson
+            QuoteResponse[] quotes = gson.fromJson(response.body(), QuoteResponse[].class);
+
+            if (quotes.length == 0) {
+                throw new Exception("No quote found in response");
+            }
+
+            QuoteResponse quoteObj = quotes[0];
+            return new ZenQuote(quoteObj.quote, quoteObj.author);
+
+        } catch (Exception e) {
+            throw new Exception("Failed to fetch quote: " + e.getMessage());
+        }
+    }
+
+    // Inner class to map the JSON structure from zenquotes.io
+    private static class QuoteResponse {
+        @SerializedName("q")
+        String quote;
+
+        @SerializedName("a")
+        String author;
     }
 }

@@ -19,10 +19,11 @@ public class Logic {
 
     private Data data;
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
 
     private Logic() {
         data = Data.get();
+        gson = new Gson();
     }
 
     public static Logic get() {
