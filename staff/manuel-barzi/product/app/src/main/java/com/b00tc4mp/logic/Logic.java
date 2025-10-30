@@ -4,18 +4,20 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
+import java.net.http.HttpRequest.BodyPublishers;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import com.b00tc4mp.data.Data;
 import com.b00tc4mp.data.UserData;
+import com.google.gson.JsonObject;
 
 public class Logic {
 
     private static Logic instance;
 
-    protected  String userId;
+    protected String userId;
 
     private Data data;
 
@@ -56,16 +58,43 @@ public class Logic {
             throw new Exception("Passwords do not match");
         }
 
-        UserData user = data.findUserByUsername(username);
+        try {
+            String jsonBody = String.format("""
+            {
+                "name": "%s",
+                "username": "%s",
+                "password": "%s",
+                "confirmPassword": "%s"
+            }
+            """, name, username, password, confirmPassword);
 
-        if (user != null) {
-            throw new Exception("User already exists");
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:8080/api/users"))
+                    .header("Content-Type", "application/json")
+                    .POST(BodyPublishers.ofString(jsonBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 201) {
+                return;
+            }
+
+            Gson gson = new Gson();
+            JsonObject errorResponse = gson.fromJson(response.body(), JsonObject.class);
+
+            String error = errorResponse.get("error").getAsString();
+            String message = errorResponse.get("message").getAsString();
+
+            throw new Exception(error + ": " + message);
+        } catch (Exception e) {
+            throw new Exception("error in register: " + e.getMessage());
         }
-
-        data.addUser(new UserData(name, username, password));
     }
 
-    public void loginUser(String username, String password) throws Exception{
+    public void loginUser(String username, String password) throws Exception {
         if (username == null || username.isEmpty()) {
             throw new Exception("Username cannot be empty");
         }
@@ -138,6 +167,7 @@ public class Logic {
 
     // Inner class to map the JSON structure from zenquotes.io
     private static class QuoteResponse {
+
         @SerializedName("q")
         String quote;
 
