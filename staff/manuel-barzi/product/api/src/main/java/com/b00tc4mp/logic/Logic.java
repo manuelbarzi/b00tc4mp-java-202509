@@ -15,8 +15,6 @@ public class Logic {
 
     private static Logic instance;
 
-    protected String userId;
-
     private Data data;
 
     private final Gson gson;
@@ -63,7 +61,7 @@ public class Logic {
         data.addUser(new UserData(name, username, password));
     }
 
-    public void loginUser(String username, String password) throws Exception {
+    public String authenticateUser(String username, String password) throws Exception {
         if (username == null || username.isEmpty()) {
             throw new Exception("Username cannot be empty");
         }
@@ -82,23 +80,15 @@ public class Logic {
             throw new Exception("Invalid password");
         }
 
-        this.userId = user.getId();
+        return user.getId();
     }
 
-    public void logoutUser() {
-        this.userId = null;
-    }
-
-    public boolean isUserLoggedIn() {
-        return this.userId != null;
-    }
-
-    public User getCurrentUser() throws Exception {
-        if (this.userId == null) {
+    public User getCurrentUser(String userId) throws Exception {
+        if (userId == null) {
             throw new Exception("No user is currently logged in");
         }
 
-        UserData user = data.findUserById(this.userId);
+        UserData user = data.findUserById(userId);
 
         return new User(user.getId(), user.getName(), user.getUsername());
     }

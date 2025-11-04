@@ -1,6 +1,5 @@
 package com.b00tc4mp.api;
 
-import com.b00tc4mp.data.Data;
 import com.b00tc4mp.logic.Logic;
 
 import com.google.gson.Gson;
@@ -12,21 +11,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "UsersServlet", urlPatterns = "/hello")
-public class UsersServlet extends HttpServlet {
+import com.b00tc4mp.api.helper.HandlerHelper;
+
+@WebServlet(name = "RegisterUserServlet", urlPatterns = "/users")
+public class RegisterUserServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
-    private Data data; // Will be initialized in init()
+    
     private Logic logic;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        this.data = Data.get(); // Get singleton instance (with preloaded "pepito")
         this.logic = Logic.get();
     }
 
@@ -37,9 +37,9 @@ public class UsersServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Read JSON body
-        String jsonInput = readRequestBody(request);
+        String jsonInput = HandlerHelper.readRequestBody(request);
         if (jsonInput == null || jsonInput.trim().isEmpty()) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, Exception.class.getSimpleName(), "Empty request body");
+            HandlerHelper.sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, Exception.class.getSimpleName(), "Empty request body");
             return;
         }
 
@@ -58,10 +58,10 @@ public class UsersServlet extends HttpServlet {
             password = json.get("password").getAsString();
             confirmPassword = json.get("confirmPassword").getAsString();
         } catch (JsonSyntaxException e) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Invalid JSON format");
+            HandlerHelper.sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Invalid JSON format");
             return;
         } catch (NullPointerException e) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Missing fields in JSON");
+            HandlerHelper.sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Missing fields in JSON");
             return;
         }
 
@@ -72,35 +72,7 @@ public class UsersServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_CREATED);
             out.flush();
         } catch (Exception e) {
-            sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), e.getMessage());
+            HandlerHelper.sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), e.getMessage());
         }
-    }
-
-    // Helper: Read full request body
-    private String readRequestBody(HttpServletRequest request) throws IOException {
-        StringBuilder sb = new StringBuilder();
-
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        }
-
-        return sb.toString();
-    }
-
-    // Helper: Send JSON error
-    private void sendError(HttpServletResponse response, PrintWriter out, int status, String error, String message) {
-        response.setStatus(status);
-        response.setCharacterEncoding("UTF-8");
-
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("error", error);
-        jsonObject.addProperty("message", message);
-
-        out.print(gson.toJson(jsonObject));
-        out.flush();
     }
 }
