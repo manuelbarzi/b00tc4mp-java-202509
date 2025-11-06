@@ -83,14 +83,14 @@ public class Logic {
         return user.getId();
     }
 
-    public User getCurrentUser(String userId) throws Exception {
+    public User getUserInfo(String userId) throws Exception {
         if (userId == null) {
             throw new Exception("No user is currently logged in");
         }
 
         UserData user = data.findUserById(userId);
 
-        return new User(user.getId(), user.getName(), user.getUsername());
+        return new User(user.getName(), user.getUsername());
     }
 
     public ZenQuote getZenQuoteOfDay() throws Exception {
