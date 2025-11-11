@@ -2,6 +2,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.b00tc4mp</groupId>
     <artifactId>api</artifactId>
     <version>0.0.0</version>
@@ -9,6 +10,13 @@
     
     <name>Product JSON API</name>
     <description>A simple product JSON API</description>
+
+    <parent>
+        <groupId>com.b00tc4mp</groupId>
+        <artifactId>product</artifactId>
+        <version>0.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     
     <dependencies>
         <dependency>
@@ -48,6 +56,12 @@
             <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>com</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
     
     <build>
@@ -72,7 +86,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.4.56.v20240826</version>
                 <configuration>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <scanIntervalSeconds>3</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/api</contextPath>
                     </webApp>
