@@ -118,7 +118,7 @@ public class App extends JFrame {
 
                 cardLayout.show(cards, "login");
             } catch (Exception ex) {
-                message.setText("Error: " + ex.getMessage());
+                message.setText(ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
         });
 

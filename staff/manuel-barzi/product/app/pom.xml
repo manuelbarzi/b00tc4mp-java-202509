@@ -9,6 +9,13 @@
     <name>Product Application</name>
     <description>A simple product application</description>
 
+    <parent>
+        <groupId>com.b00tc4mp</groupId>
+        <artifactId>product</artifactId>
+        <version>0.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
