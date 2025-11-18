@@ -48,7 +48,7 @@ public class RegisterUserServlet extends HttpServlet {
         String name;
         String username;
         String password;
-        String confirmPassword;
+        String passwordRepeat;
 
         try {
             json = gson.fromJson(jsonInput, JsonObject.class);
@@ -56,7 +56,7 @@ public class RegisterUserServlet extends HttpServlet {
             name = json.get("name").getAsString().trim();
             username = json.get("username").getAsString().trim();
             password = json.get("password").getAsString();
-            confirmPassword = json.get("confirmPassword").getAsString();
+            passwordRepeat = json.get("passwordRepeat").getAsString();
         } catch (JsonSyntaxException e) {
             HandlerHelper.sendError(response, out, HttpServletResponse.SC_BAD_REQUEST, e.getClass().getSimpleName(), "Invalid JSON format");
             return;
@@ -66,7 +66,7 @@ public class RegisterUserServlet extends HttpServlet {
         }
 
         try {
-            logic.registerUser(name, username, password, confirmPassword);
+            logic.registerUser(name, username, password, passwordRepeat);
 
             // Success response
             response.setStatus(HttpServletResponse.SC_CREATED);

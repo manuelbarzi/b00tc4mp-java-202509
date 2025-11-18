@@ -82,10 +82,10 @@ public class App extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        panel.add(new JLabel("Confirm Password:"), gbc);
-        JPasswordField confirmPasswordField = new JPasswordField(15);
+        panel.add(new JLabel("Password repeat:"), gbc);
+        JPasswordField passwordRepeatField = new JPasswordField(15);
         gbc.gridx = 1;
-        panel.add(confirmPasswordField, gbc);
+        panel.add(passwordRepeatField, gbc);
 
         JButton registerBtn = new JButton("Register");
         gbc.gridx = 0;
@@ -105,7 +105,7 @@ public class App extends JFrame {
             String name = nameField.getText().trim();
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
-            String confirmPass = new String(confirmPasswordField.getPassword());
+            String confirmPass = new String(passwordRepeatField.getPassword());
 
             try {
                 logic.registerUser(name, username, password, confirmPass);
@@ -113,7 +113,7 @@ public class App extends JFrame {
                 nameField.setText("");
                 usernameField.setText("");
                 passwordField.setText("");
-                confirmPasswordField.setText("");
+                passwordRepeatField.setText("");
                 message.setText("");
 
                 cardLayout.show(cards, "login");
@@ -126,7 +126,7 @@ public class App extends JFrame {
             nameField.setText("");
             usernameField.setText("");
             passwordField.setText("");
-            confirmPasswordField.setText("");
+            passwordRepeatField.setText("");
             message.setText("");
 
             cardLayout.show(cards, "login");
@@ -199,7 +199,7 @@ public class App extends JFrame {
 
                 cardLayout.show(cards, "home");
             } catch (Exception ex) {
-                message.setText("Error: " + ex.getMessage());
+                message.setText(ex.getClass().getSimpleName() + ": " + ex.getMessage());
             }
         });
 
