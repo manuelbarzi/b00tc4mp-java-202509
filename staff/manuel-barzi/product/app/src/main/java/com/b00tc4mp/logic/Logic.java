@@ -54,13 +54,13 @@ public class Logic {
 
         try {
             String jsonBody = String.format("""
-                                                    {
-                                                        "name": "%s",
-                                                        "username": "%s",
-                                                        "password": "%s",
-                                                        "passwordRepeat": "%s"
-                                                    }
-                                                    """, name, username, password, passwordRepeat);
+            {
+                "name": "%s",
+                "username": "%s",
+                "password": "%s",
+                "passwordRepeat": "%s"
+            }
+            """, name, username, password, passwordRepeat);
 
             HttpClient client = HttpClient.newHttpClient();
 
