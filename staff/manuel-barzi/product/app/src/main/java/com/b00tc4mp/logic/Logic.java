@@ -1,27 +1,26 @@
 package com.b00tc4mp.logic;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
-
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+import java.net.http.HttpResponse;
 
 import com.b00tc4mp.data.Data;
 import com.b00tc4mp.error.CredentialException;
 import com.b00tc4mp.error.DuplicityException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 import com.b00tc4mp.error.ExceptionProvider;
 import com.b00tc4mp.error.NotFoundException;
 import com.b00tc4mp.error.SystemException;
 import com.b00tc4mp.error.ValidationException;
+import com.b00tc4mp.logic.helper.Config;
 import com.b00tc4mp.validation.Validate;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.SerializedName;
 
 public class Logic {
 
@@ -65,7 +64,7 @@ public class Logic {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8080/api/users"))
+                    .uri(new URI(Config.getApiUrl() + "/users"))
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString(jsonBody))
                     .build();
@@ -106,8 +105,9 @@ public class Logic {
 
             HttpClient client = HttpClient.newHttpClient();
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8080/api/users/auth"))
+            HttpRequest request;
+            request = HttpRequest.newBuilder()
+                    .uri(new URI(Config.getApiUrl() + "/users/auth"))
                     .header("Content-Type", "application/json")
                     .POST(BodyPublishers.ofString(jsonBody))
                     .build();
@@ -121,8 +121,6 @@ public class Logic {
                 String token = loginResponse.getAsString();
 
                 data.setToken(token);
-
-                System.out.println(token);
 
                 return;
             }
@@ -156,15 +154,12 @@ public class Logic {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8080/api/users/info"))
+                    .uri(new URI(Config.getApiUrl() + "/users/info"))
                     .header("Authorization", "Bearer " + data.getToken())
                     .GET()
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println(response.statusCode());
-            System.out.println(response.body());
 
             if (response.statusCode() == 200) {
                 Gson gson = new Gson();

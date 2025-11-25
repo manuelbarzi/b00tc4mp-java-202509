@@ -14,7 +14,7 @@ public class HandlerHelper {
 
     private static final Gson gson = new Gson();
 
-     public static String readRequestBody(HttpServletRequest request) throws IOException {
+    public static String readRequestBody(HttpServletRequest request) throws IOException {
         StringBuilder sb = new StringBuilder();
 
         try (BufferedReader reader = request.getReader()) {
@@ -27,7 +27,6 @@ public class HandlerHelper {
 
         return sb.toString();
     }
-
 
     public static void sendError(HttpServletResponse response, PrintWriter out, int status, String error, String message) {
         response.setStatus(status);

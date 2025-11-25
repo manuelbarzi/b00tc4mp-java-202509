@@ -7,12 +7,13 @@ import java.util.Properties;
 import com.b00tc4mp.error.SystemException;
 
 public final class JwtConfig {
+
     private static final String SECRET;
     private static final long EXPIRATION;
 
     static {
         Properties prop = new Properties();
-        
+
         try (InputStream input = JwtConfig.class.getClassLoader()
                 .getResourceAsStream("application.properties")) {
             if (input == null) {
