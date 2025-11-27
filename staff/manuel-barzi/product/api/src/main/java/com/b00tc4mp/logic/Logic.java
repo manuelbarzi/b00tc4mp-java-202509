@@ -4,11 +4,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
+import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import com.b00tc4mp.data.Data;
+import com.b00tc4mp.data.DataImpl;
 import com.b00tc4mp.data.UserData;
 import com.b00tc4mp.error.CredentialException;
 
@@ -27,7 +29,7 @@ public class Logic {
     private final Gson gson;
 
     private Logic() {
-        data = Data.get();
+        data = DataImpl.get();
         gson = new Gson();
     }
 
@@ -49,7 +51,7 @@ public class Logic {
             throw new DuplicityException("user already exists");
         }
 
-        data.addUser(new UserData(name, username, password));
+        data.addUser(new UserData(UUID.randomUUID().toString(), name, username, password));
     }
 
     public String authenticateUser(String username, String password) throws ValidationException, NotFoundException, CredentialException {
