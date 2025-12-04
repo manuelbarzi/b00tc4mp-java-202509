@@ -7,15 +7,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.b00tc4mp.Config;
+
 public class DataImpl implements Data {
 
     private static final HikariDataSource ds;
 
     static {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
-        config.setUsername("b00tc4mp");
-        config.setPassword("");           // change this obviously
+        config.setJdbcUrl("jdbc:" + Config.getDbUri());
+        config.setUsername(Config.getDbUser());
+        config.setPassword(Config.getDbPass());
         config.setMaximumPoolSize(10);
         ds = new HikariDataSource(config);
     }

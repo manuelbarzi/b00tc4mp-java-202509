@@ -4,6 +4,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
+
+import com.b00tc4mp.Config;
+
 import java.util.Date;
 
 public class JwtHelper {

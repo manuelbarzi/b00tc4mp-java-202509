@@ -21,7 +21,6 @@ import com.b00tc4mp.error.SystemException;
 import com.b00tc4mp.validation.Validate;
 
 public class Logic {
-
     private static Logic instance;
 
     private Data data;
